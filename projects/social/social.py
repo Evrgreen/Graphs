@@ -1,6 +1,11 @@
+from random import randint
+from collections import deque
+
+
 class User:
     def __init__(self, name):
         self.name = name
+
 
 class SocialGraph:
     def __init__(self):
@@ -28,6 +33,11 @@ class SocialGraph:
         self.users[self.last_id] = User(name)
         self.friendships[self.last_id] = set()
 
+    def shuffle(self, list):
+        for index in range(0, len(list)):
+            random_index = randint(index, len(list)-1)
+            list[random_index], list[index] = list[index], list[random_index]
+
     def populate_graph(self, num_users, avg_friendships):
         """
         Takes a number of users and an average number of friendships
@@ -45,8 +55,21 @@ class SocialGraph:
         # !!!! IMPLEMENT ME
 
         # Add users
-
+        for user in range(num_users):
+            self.add_user(user)
         # Create friendships
+        friendships = []
+        for user in range(1, self.last_id+1):
+            for friend in range(user+1, num_users+1):
+                friendships.append((user, friend))
+
+        self.shuffle(friendships)
+
+        total_friendships = num_users * avg_friendships
+        random_friendships = friendships[:total_friendships//2]
+
+        for friendship in random_friendships:
+            self.add_friendship(friendship[0], friendship[1])
 
     def get_all_social_paths(self, user_id):
         """
@@ -57,9 +80,26 @@ class SocialGraph:
 
         The key is the friend's ID and the value is the path.
         """
-        visited = {}  # Note that this is a dictionary, not a set
+
+        work_stack = deque()
+        visited = {}
+        # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
+        visited[user_id] = [user_id]
+        work_stack.append([user_id])
+        while len(work_stack) > 0:
+            current_friendship = work_stack.popleft()
+            current_user = current_friendship[-1]
+            friends = {
+                user for user in self.friendships[current_user] if user is not user_id and user not in visited}
+            for friend in friends:
+                visited[friend] = [*current_friendship, friend]
+                work_stack.append(visited[friend])
+
         return visited
+
+    def __str__(self):
+        return f'Users: {self.users} and Friendships {self.friendships}'
 
 
 if __name__ == '__main__':

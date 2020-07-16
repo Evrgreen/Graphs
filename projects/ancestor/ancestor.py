@@ -12,7 +12,6 @@ def earliest_ancestor(ancestors, starting_node):
     work_stack.append([starting_node])
     while len(work_stack) > 0:
         current_path = work_stack.pop()
-        print(current_path)
         current_node = current_path[-1]
         if current_node not in visited:
             visited.add(current_node)
