@@ -88,7 +88,9 @@ class SocialGraph:
         visited[user_id] = [user_id]
         work_stack.append([user_id])
         while len(work_stack) > 0:
+
             current_friendship = work_stack.popleft()
+            print(current_friendship)
             current_user = current_friendship[-1]
             friends = {
                 user for user in self.friendships[current_user] if user is not user_id and user not in visited}
